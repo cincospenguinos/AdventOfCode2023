@@ -37,15 +37,29 @@ module AdventOfCode2023
        "one" => 1,
     }
 
-    SINGLE_DIGITS_WITH_TENS_NAMES = NAMES_AS_NUMBERS.slice(*%w(six seven eight nine))
+    SINGLE_DIGITS_WITH_TENS_NAMES = {
+      "six" => "sixty",
+      "seven" => "seventy",
+      "eight" => "eighty",
+      "nine" => "ninety",
+    }
+
+    TENS_NUMBERS = NAMES_AS_NUMBERS.slice(*%w(twenty thirty forty fifty sixty seventy eighty ninety))
 
     def initialize; end
 
     def from(string)
       return NAMES_AS_NUMBERS[string].to_i unless NAMES_AS_NUMBERS[string].nil?
 
-      NAMES_AS_NUMBERS.keys
+      potential_vals = NAMES_AS_NUMBERS.keys
         .select { |number_string| string.include?(number_string) }
+      potential_vals.reject do |s|
+        tens_name = SINGLE_DIGITS_WITH_TENS_NAMES[s]
+
+        !tens_name.nil? &&
+        string.include?(tens_name) &&
+        !/#{tens_name}#{s}/.match(string)
+      end
         .map { |number_string| NAMES_AS_NUMBERS[number_string] }
         .sum
     end
